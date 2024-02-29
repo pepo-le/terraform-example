@@ -83,3 +83,8 @@ variable "security_group_ids" {
   description = "RDSインスタンスに関連付けるセキュリティグループのIDのリスト"
   type        = list(string)
 }
+
+variable "subnet_group_name" {
+  description = "RDSインスタンスに関連付けるDBサブネットグループの名前"
+  type        = string
+}

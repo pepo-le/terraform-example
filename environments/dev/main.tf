@@ -39,6 +39,23 @@ module "s3_log" {
 }
 
 # IAMロールの作成
+module "iam_role_ecs_task" {
+  source    = "../../modules/iam_role"
+  role_name = "foo-dev-task-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
 module "iam_role_ecs_task_execution" {
   source    = "../../modules/iam_role"
   role_name = "foo-dev-task-execution-role"
@@ -79,7 +96,7 @@ module "iam_policy_s3" {
 
 module "iam_role_policy_attachment_s3" {
   source     = "../../modules/iam_role_policy_attachment"
-  role_name  = module.iam_role_ecs_task_execution.name
+  role_name  = module.iam_role_ecs_task.name
   policy_arn = module.iam_policy_s3.arn
 }
 
@@ -104,7 +121,7 @@ module "iam_policy_ses" {
 
 module "iam_role_policy_attachment_ses" {
   source     = "../../modules/iam_role_policy_attachment"
-  role_name  = module.iam_role_ecs_task_execution.name
+  role_name  = module.iam_role_ecs_task.name
   policy_arn = module.iam_policy_ses.arn
 }
 
@@ -126,13 +143,19 @@ module "iam_policy_parameter" {
   })
 }
 
-module "iam_role_policy_attachment_parameter" {
+module "iam_role_policy_attachment_ecs_parameter" {
   source     = "../../modules/iam_role_policy_attachment"
   role_name  = module.iam_role_ecs_task_execution.name
   policy_arn = module.iam_policy_parameter.arn
 }
 
-module "iam_role_policy_attachment-ecr" {
+module "iam_role_policy_attachment_ecs_excecution" {
+  source     = "../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+module "iam_role_policy_attachment_ecs_ecr" {
   source     = "../../modules/iam_role_policy_attachment"
   role_name  = module.iam_role_ecs_task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
@@ -154,7 +177,7 @@ module "http_sg" {
   vpc_id  = module.vpc.vpc_id
 
   rule_map = {
-    http = {
+    http_1 = {
       type                     = "ingress"
       from_port                = 80
       to_port                  = 80
@@ -164,6 +187,16 @@ module "http_sg" {
       source_security_group_id = null
       description              = "allow http"
     }
+    http_2 = {
+      type                     = "egress"
+      from_port                = 0
+      to_port                  = 65535
+      protocol                 = "TCP"
+      cidr_blocks              = ["0.0.0.0/0"]
+      ipv6_cidr_blocks         = null
+      source_security_group_id = null
+      description              = "allow http"
+    },
   }
 }
 
@@ -173,7 +206,7 @@ module "rds_sg" {
   vpc_id  = module.vpc.vpc_id
 
   rule_map = {
-    http = {
+    rds_1 = {
       type                     = "ingress"
       from_port                = 3306
       to_port                  = 3306
@@ -181,9 +214,34 @@ module "rds_sg" {
       cidr_blocks              = null
       ipv6_cidr_blocks         = null
       source_security_group_id = module.http_sg.sg_id
-      description              = "allow http"
-    }
+      description              = "allow mysql"
+    },
+    rds_2 = {
+      type                     = "egress"
+      from_port                = 0
+      to_port                  = 65535
+      protocol                 = "TCP"
+      cidr_blocks              = null
+      ipv6_cidr_blocks         = null
+      source_security_group_id = module.http_sg.sg_id
+      description              = "allow mysql"
+    },
   }
+}
+
+# ALBを作成
+module "alb" {
+  source                     = "../../modules/alb"
+  name                       = "foo-dev-alb"
+  internal                   = false
+  sg_id                      = module.http_sg.sg_id
+  subnet_ids                 = module.vpc.subnet_ids
+  enable_deletion_protection = false
+  tg_name                    = "foo-dev-alb-tg"
+  tg_port                    = 80
+  tg_vpc_id                  = module.vpc.vpc_id
+  tg_target_type             = "ip"
+  listener_port              = 80
 }
 
 # ECRリポジトリを作成
@@ -206,6 +264,7 @@ module "ecs_task_definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
+  task_role_arn            = module.iam_role_ecs_task.arn
   execution_role_arn       = module.iam_role_ecs_task_execution.arn
 
   container_definitions = jsonencode([
@@ -217,10 +276,9 @@ module "ecs_task_definition" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
-        },
-      ],
+          containerPort = 3000
+        }
+      ]
       environment = [
         {
           name  = "DB_USER"
@@ -249,19 +307,9 @@ module "ecs_service" {
   security_groups     = [module.http_sg.sg_id]
   assign_public_ip    = true
   vpc_id              = module.vpc.vpc_id
-}
-
-# ALBを作成
-module "alb" {
-  source                     = "../../modules/alb"
-  alb_name                   = "foo-dev-alb"
-  internal                   = false
-  alb_sg_id                  = module.http_sg.sg_id
-  alb_subnet_ids             = module.vpc.subnet_ids
-  enable_deletion_protection = false
-  alb_tg_name                = "foo-dev-alb-tg"
-  alb_port                   = 80
-  alb_tg_vpc_id              = module.vpc.vpc_id
+  target_group_arn    = module.alb.target_group_arn
+  container_name      = module.ecs_task_definition.name
+  container_port      = 3000
 }
 
 # RDSインスタンスを作成
@@ -269,6 +317,7 @@ module "rds" {
   source             = "../../modules/rds"
   vpc_id             = module.vpc.vpc_id
   subnet_ids         = module.vpc.subnet_ids
+  subnet_group_name  = "foo-dev-subnet-group"
   security_group_ids = [module.rds_sg.sg_id]
 
   multi_az            = false
@@ -288,4 +337,15 @@ module "rds" {
   # 後で変更するために、初期値を設定
   db_password          = "uninitializepassword"
   parameter_group_name = "default.mysql8.0"
+}
+
+
+# CloudFrontを作成
+module "cloudfront" {
+  source                = "../../modules/cloudfront"
+  origin_type           = "s3"
+  origin_id             = module.s3_web.bucket_name
+  domain_name           = module.s3_web.bucket_domain_name
+  origin_access_control = module.s3_web.bucket_name
+  cors                  = false
 }

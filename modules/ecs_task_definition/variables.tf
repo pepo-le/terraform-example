@@ -23,6 +23,11 @@ variable "memory" {
   type        = string
 }
 
+variable "task_role_arn" {
+  description = "タスクロールのARN"
+  type        = string
+}
+
 variable "execution_role_arn" {
   description = "実行ロールのARN"
   type        = string

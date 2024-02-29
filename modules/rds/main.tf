@@ -4,7 +4,6 @@ resource "aws_db_instance" "default" {
   engine                 = var.engine
   engine_version         = var.engine_version
   instance_class         = var.instance_class
-  name                   = var.db_name
   username               = var.db_username
   password               = var.db_password
   parameter_group_name   = var.parameter_group_name
@@ -17,8 +16,7 @@ resource "aws_db_instance" "default" {
 }
 
 resource "aws_db_subnet_group" "default" {
-  name       = "rds-subnet-group"
+  name       = var.subnet_group_name
   subnet_ids = var.subnet_ids
-
-  tags = var.tags
+  tags       = var.tags
 }

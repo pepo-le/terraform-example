@@ -1,22 +1,23 @@
 resource "aws_lb" "lb" {
-  name               = var.alb_name
+  name               = var.name
   internal           = var.internal
   load_balancer_type = "application"
-  security_groups    = [var.alb_sg_id]
-  subnets            = var.alb_subnet_ids
+  security_groups    = [var.sg_id]
+  subnets            = var.subnet_ids
 
   enable_deletion_protection = var.enable_deletion_protection
 
   tags = {
-    Name = var.alb_name
+    Name = var.name
   }
 }
 
 resource "aws_lb_target_group" "tg" {
-  name     = var.alb_tg_name
-  port     = var.alb_port
-  protocol = "HTTP"
-  vpc_id   = var.alb_tg_vpc_id
+  name        = var.tg_name
+  port        = var.tg_port
+  protocol    = "HTTP"
+  vpc_id      = var.tg_vpc_id
+  target_type = var.tg_target_type
 
   health_check {
     enabled             = true
@@ -30,14 +31,28 @@ resource "aws_lb_target_group" "tg" {
   }
 
   tags = {
-    Name = var.alb_tg_name
+    Name = var.tg_name
   }
 }
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.lb.arn
-  port              = var.alb_port
+  port              = var.listener_port
   protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg.arn
+  }
+}
+
+resource "aws_lb_listener" "listener_https" {
+  count = var.certificate_arn != "" ? 1 : 0
+
+  load_balancer_arn = aws_lb.lb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
 
   default_action {
     type             = "forward"

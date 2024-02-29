@@ -14,7 +14,7 @@ variable "task_definition_arn" {
 }
 
 variable "desired_count" {
-  description = "ディザイアドカウント"
+  description = "起動数"
   type        = number
 }
 
@@ -41,4 +41,19 @@ variable "assign_public_ip" {
 variable "vpc_id" {
   description = "VPCのID"
   type        = string
+}
+
+variable "target_group_arn" {
+  description = "ターゲットグループのARN"
+  type        = string
+}
+
+variable "container_name" {
+  description = "コンテナ名"
+  type        = string
+}
+
+variable "container_port" {
+  description = "コンテナポート"
+  type        = number
 }
