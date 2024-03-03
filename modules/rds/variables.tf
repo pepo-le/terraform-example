@@ -24,11 +24,6 @@ variable "instance_class" {
   type        = string
 }
 
-variable "db_name" {
-  description = "RDSインスタンス作成時に作成するデータベースの名前"
-  type        = string
-}
-
 variable "db_username" {
   description = "マスターDBユーザーのユーザー名"
   type        = string

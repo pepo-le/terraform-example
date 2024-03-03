@@ -24,7 +24,7 @@ resource "aws_lb_target_group" "tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
-    path                = "/"
+    path                = var.tg_health_check_path
     protocol            = "HTTP"
     interval            = 30
     matcher             = "200"

@@ -25,6 +25,11 @@ variable "enable_deletion_protection" {
   default     = false
 }
 
+variable "listener_port" {
+  description = "リスナーのポート"
+  type        = number
+}
+
 variable "tg_name" {
   description = "ターゲットグループの名前"
   type        = string
@@ -45,9 +50,10 @@ variable "tg_target_type" {
   type        = string
 }
 
-variable "listener_port" {
-  description = "リスナーのポート"
-  type        = number
+variable "tg_health_check_path" {
+  description = "ターゲットグループのヘルスチェックパス"
+  type        = string
+  default     = "/"
 }
 
 variable "certificate_arn" {

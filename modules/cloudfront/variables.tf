@@ -1,28 +1,58 @@
-variable "domain_name" {
-  description = "オリジンのドメイン名"
-  type        = string
-}
-
-variable "origin_id" {
-  description = "CloudFrontのオリジンID"
-  type        = string
-}
-
 variable "comment" {
   description = "CloudFrontのコメント"
   type        = string
   default     = ""
 }
 
+variable "default_cache_behavior" {
+  description = "CloudFrontのデフォルトキャッシュ動作"
+  type = object({
+    target_origin_id = string
+    allowed_methods  = list(string)
+    cached_methods   = list(string)
+    forwarded_values = object({
+      headers      = list(string)
+      query_string = bool
+      cookies = object({
+        forward = string
+      })
+    })
+    viewer_protocol_policy = string
+  })
+}
+
+variable "origins" {
+  description = "CloudFrontのオリジンのリスト"
+  type = list(object({
+    origin_id   = string
+    domain_name = string
+    custom_origin_config = object({
+      http_port              = number
+      https_port             = number
+      origin_protocol_policy = string
+      origin_ssl_protocols   = list(string)
+    })
+  }))
+}
+
+variable "ordered_cache_behaviors" {
+  description = "キャッシュ動作のリスト"
+  type = list(object({
+    path_pattern           = string
+    origin_id              = string
+    allowed_methods        = list(string)
+    cached_methods         = list(string)
+    headers                = list(string)
+    query_string           = bool
+    cookies_forward        = string
+    viewer_protocol_policy = string
+  }))
+}
+
 variable "origin_access_control" {
   description = "CloudFrontのオリジンアクセスコントロール"
   type        = string
   default     = ""
-}
-
-variable "origin_type" {
-  description = "CloudFrontのオリジンアクセスコントロールのオリジンタイプ"
-  type        = string
 }
 
 variable "price_class" {
@@ -35,4 +65,11 @@ variable "cors" {
   description = "CORSを有効にするかどうか"
   type        = bool
   default     = true
+}
+
+variable "oai_comment" {
+  description = "CloudFrontのOAIのコメント"
+  type        = string
+  default     = ""
+
 }

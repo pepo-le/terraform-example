@@ -8,3 +8,9 @@ variable "is_public" {
   type        = bool
   default     = false
 }
+
+variable "oai_principal" {
+  description = "S3バケットにアクセスするIAMユーザー"
+  type        = string
+  default     = "*"
+}
