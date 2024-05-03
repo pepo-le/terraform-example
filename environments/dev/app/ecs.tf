@@ -12,8 +12,8 @@ module "ecs_task_definition" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-  task_role_arn            = data.terraform_remote_state.common.outputs.ecs_task_role_arn
-  execution_role_arn       = data.terraform_remote_state.common.outputs.ecs_task_exec_role_arn
+  task_role_arn            = data.terraform_remote_state.common.outputs.iam_role_ecs_task_role_arn
+  execution_role_arn       = data.terraform_remote_state.common.outputs.iam_role_ecs_task_exec_role_arn
 
   container_definitions = jsonencode([
     {
@@ -71,7 +71,7 @@ module "ecs_service" {
   security_groups     = [module.ecs_sg.id]
   assign_public_ip    = true
   vpc_id              = data.terraform_remote_state.common.outputs.vpc_id
-  target_group_arn    = module.alb.target_group_arn
+  target_group_arn    = data.terraform_remote_state.common.outputs.alb_target_group_arn
   container_name      = module.ecs_task_definition.name
   container_port      = 3000
 }

@@ -1,4 +1,4 @@
-output "hostname" {
+output "rds_hostname" {
   value = module.rds.hostname
 }
 

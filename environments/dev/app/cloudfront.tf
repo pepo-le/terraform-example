@@ -9,7 +9,7 @@ module "cloudfront_web" {
   oai_comment = "foo-dev-oai"
 
   default_cache_behavior = {
-    target_origin_id = module.alb.name
+    target_origin_id = data.terraform_remote_state.common.outputs.alb_name
     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods   = ["GET", "HEAD"]
     forwarded_values = {
@@ -24,8 +24,8 @@ module "cloudfront_web" {
 
   origins = [
     {
-      origin_id   = module.alb.name
-      domain_name = module.alb.dns_name
+      origin_id   = data.terraform_remote_state.common.outputs.alb_name
+      domain_name = data.terraform_remote_state.common.outputs.alb_dns_name
       custom_origin_config = {
         http_port              = 80
         https_port             = 443
