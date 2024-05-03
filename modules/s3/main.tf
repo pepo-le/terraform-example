@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "bucket" {
+resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 
   tags = {
@@ -6,9 +6,9 @@ resource "aws_s3_bucket" "bucket" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "bucket_public_access_allow" {
+resource "aws_s3_bucket_public_access_block" "main" {
   count  = var.is_public ? 1 : 0
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.main.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -16,9 +16,9 @@ resource "aws_s3_bucket_public_access_block" "bucket_public_access_allow" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "bucket_policy" {
+resource "aws_s3_bucket_policy" "main" {
   count  = var.is_public ? 1 : 0
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.main.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -27,11 +27,11 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         Sid       = "PublicReadGetObject",
         Action    = ["s3:GetObject"]
         Effect    = "Allow"
-        Resource  = "${aws_s3_bucket.bucket.arn}/*"
+        Resource  = "${aws_s3_bucket.main.arn}/*"
         Principal = "*"
       },
     ]
   })
 
-  depends_on = [aws_s3_bucket.bucket, aws_s3_bucket_public_access_block.bucket_public_access_allow]
+  depends_on = [aws_s3_bucket.main, aws_s3_bucket_public_access_block.main]
 }

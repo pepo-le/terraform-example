@@ -1,6 +1,10 @@
+output "cloudfront_domain" {
+  value = module.cloudfront_web.domain
+}
+
 # CloudFrontを作成
 module "cloudfront_web" {
-  source      = "../../modules/cloudfront"
+  source      = "../../../modules/cloudfront"
   cors        = false
   oai_comment = "foo-dev-oai"
 
@@ -30,17 +34,16 @@ module "cloudfront_web" {
       }
     },
     {
-      origin_id            = module.s3_web.bucket_name
-      domain_name          = module.s3_web.bucket_domain_name
+      origin_id            = data.terraform_remote_state.common.outputs.s3_images_bucket_name
+      domain_name          = data.terraform_remote_state.common.outputs.s3_images_bucket_domain_name
       custom_origin_config = null
     }
   ]
 
   ordered_cache_behaviors = [
     {
-      path_pattern = "/images/*"
-      origin_id    = module.s3_web.bucket_name
-      # origin_id              = module.alb.name
+      path_pattern           = "/images/*"
+      origin_id              = data.terraform_remote_state.common.outputs.s3_images_bucket_name
       allowed_methods        = ["GET", "HEAD"]
       cached_methods         = ["GET", "HEAD"]
       headers                = []

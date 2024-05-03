@@ -1,6 +1,22 @@
+output "ecs_task_role_name" {
+  value = module.iam_role_ecs_task.name
+}
+
+output "ecs_task_role_arn" {
+  value = module.iam_role_ecs_task.arn
+}
+
+output "ecs_task_exec_role_name" {
+  value = module.iam_role_ecs_task_exec.name
+}
+
+output "ecs_task_exec_role_arn" {
+  value = module.iam_role_ecs_task_exec.arn
+}
+
 # IAMロールの作成
 module "iam_role_ecs_task" {
-  source    = "../../modules/iam_role"
+  source    = "../../../modules/iam_role"
   role_name = "foo-dev-task-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -16,9 +32,9 @@ module "iam_role_ecs_task" {
   })
 }
 
-module "iam_role_ecs_task_execution" {
-  source    = "../../modules/iam_role"
-  role_name = "foo-dev-task-execution-role"
+module "iam_role_ecs_task_exec" {
+  source    = "../../../modules/iam_role"
+  role_name = "foo-dev-task-exec-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -34,10 +50,10 @@ module "iam_role_ecs_task_execution" {
 }
 
 # IAMポリシーの作成
-module "iam_policy_s3" {
-  source             = "../../modules/iam_policy"
-  policy_name        = "foo-dev-s3-policy"
-  policy_description = "foo dev s3 policy"
+module "iam_policy_s3_images" {
+  source             = "../../../modules/iam_policy"
+  policy_name        = "foo-dev-s3-images-policy"
+  policy_description = "foo dev s3 images policy"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -48,20 +64,46 @@ module "iam_policy_s3" {
           "s3:ListBucket"
         ],
         Effect   = "Allow",
-        Resource = "${module.s3_log.bucket_arn}/*"
+        Resource = "${module.s3_images.bucket_arn}/*"
       }
     ]
   })
 }
 
-module "iam_role_policy_attachment_s3" {
-  source     = "../../modules/iam_role_policy_attachment"
+module "iam_role_policy_attachment_ecs_s3_images" {
+  source     = "../../../modules/iam_role_policy_attachment"
   role_name  = module.iam_role_ecs_task.name
-  policy_arn = module.iam_policy_s3.arn
+  policy_arn = module.iam_policy_s3_images.arn
+}
+
+module "iam_policy_s3_logs" {
+  source             = "../../../modules/iam_policy"
+  policy_name        = "foo-dev-s3-logs-policy"
+  policy_description = "foo dev s3 logs policy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        Effect   = "Allow",
+        Resource = "${module.s3_logs.bucket_arn}/*"
+      }
+    ]
+  })
+}
+
+module "iam_role_policy_attachment_ecs_s3_logs" {
+  source     = "../../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task.name
+  policy_arn = module.iam_policy_s3_logs.arn
 }
 
 module "iam_policy_ses" {
-  source             = "../../modules/iam_policy"
+  source             = "../../../modules/iam_policy"
   policy_name        = "foo-dev-ses-policy"
   policy_description = "foo dev ses policy"
   policy = jsonencode({
@@ -79,14 +121,14 @@ module "iam_policy_ses" {
   })
 }
 
-module "iam_role_policy_attachment_ses" {
-  source     = "../../modules/iam_role_policy_attachment"
+module "iam_role_policy_attachment_ecs_ses" {
+  source     = "../../../modules/iam_role_policy_attachment"
   role_name  = module.iam_role_ecs_task.name
   policy_arn = module.iam_policy_ses.arn
 }
 
 module "iam_policy_cwlogs" {
-  source             = "../../modules/iam_policy"
+  source             = "../../../modules/iam_policy"
   policy_name        = "foo-dev-cwlogs-policy"
   policy_description = "foo dev cwlogs policy"
   policy = jsonencode({
@@ -108,14 +150,20 @@ module "iam_policy_cwlogs" {
   })
 }
 
-module "iam_role_policy_attachment_cwlogs" {
-  source     = "../../modules/iam_role_policy_attachment"
+module "iam_role_policy_attachment_ecs_cwlogs" {
+  source     = "../../../modules/iam_role_policy_attachment"
   role_name  = module.iam_role_ecs_task.name
   policy_arn = module.iam_policy_cwlogs.arn
 }
 
+module "iam_role_policy_attachment_ecs_exec_cwlogs" {
+  source     = "../../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task_exec.name
+  policy_arn = module.iam_policy_cwlogs.arn
+}
+
 module "iam_policy_parameter" {
-  source             = "../../modules/iam_policy"
+  source             = "../../../modules/iam_policy"
   policy_name        = "foo-dev-parameter-policy"
   policy_description = "foo dev parameter policy"
   policy = jsonencode({
@@ -126,26 +174,26 @@ module "iam_policy_parameter" {
           "ssm:GetParameters",
         ],
         Effect   = "Allow",
-        Resource = [module.ssm_db_user.parameter_arn, module.ssm_db_password.parameter_arn]
+        Resource = "*"
       }
     ]
   })
 }
 
 module "iam_role_policy_attachment_ecs_parameter" {
-  source     = "../../modules/iam_role_policy_attachment"
-  role_name  = module.iam_role_ecs_task_execution.name
+  source     = "../../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task_exec.name
   policy_arn = module.iam_policy_parameter.arn
 }
 
-module "iam_role_policy_attachment_ecs_excecution" {
-  source     = "../../modules/iam_role_policy_attachment"
-  role_name  = module.iam_role_ecs_task_execution.name
+module "iam_role_policy_attachment_ecs_exce" {
+  source     = "../../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 module "iam_role_policy_attachment_ecs_ecr" {
-  source     = "../../modules/iam_role_policy_attachment"
-  role_name  = module.iam_role_ecs_task_execution.name
+  source     = "../../../modules/iam_role_policy_attachment"
+  role_name  = module.iam_role_ecs_task_exec.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }

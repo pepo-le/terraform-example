@@ -1,4 +1,4 @@
-resource "aws_ecs_service" "service" {
+resource "aws_ecs_service" "main" {
   name            = var.service_name
   cluster         = var.cluster_id
   task_definition = var.task_definition_arn

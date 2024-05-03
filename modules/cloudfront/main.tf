@@ -2,7 +2,7 @@ resource "aws_cloudfront_origin_access_identity" "main" {
   comment = var.oai_comment
 }
 
-resource "aws_cloudfront_distribution" "distribution" {
+resource "aws_cloudfront_distribution" "main" {
   enabled         = true
   is_ipv6_enabled = true
   comment         = var.comment

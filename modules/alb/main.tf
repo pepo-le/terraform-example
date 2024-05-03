@@ -1,4 +1,4 @@
-resource "aws_lb" "lb" {
+resource "aws_lb" "main" {
   name               = var.name
   internal           = var.internal
   load_balancer_type = "application"
@@ -12,7 +12,7 @@ resource "aws_lb" "lb" {
   }
 }
 
-resource "aws_lb_target_group" "tg" {
+resource "aws_lb_target_group" "main" {
   name        = var.tg_name
   port        = var.tg_port
   protocol    = "HTTP"
@@ -35,27 +35,27 @@ resource "aws_lb_target_group" "tg" {
   }
 }
 
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_lb.lb.arn
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
   port              = var.listener_port
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
+    target_group_arn = aws_lb_target_group.main.arn
   }
 }
 
-resource "aws_lb_listener" "listener_https" {
+resource "aws_lb_listener" "https" {
   count = var.certificate_arn != "" ? 1 : 0
 
-  load_balancer_arn = aws_lb.lb.arn
+  load_balancer_arn = aws_lb.main.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = var.certificate_arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
+    target_group_arn = aws_lb_target_group.main.arn
   }
 }

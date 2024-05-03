@@ -71,5 +71,10 @@ variable "oai_comment" {
   description = "CloudFrontのOAIのコメント"
   type        = string
   default     = ""
+}
 
+variable "basic_auth" {
+  description = "Basic認証を有効にするかどうか"
+  type        = bool
+  default     = false
 }

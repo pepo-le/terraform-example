@@ -1,9 +1,9 @@
-output "sg_id" {
-  value       = aws_security_group.sg.id
+output "id" {
+  value       = aws_security_group.main.id
   description = "セキュリティグループのID"
 }
 
-output "sg_name" {
-  value       = aws_security_group.sg.name
+output "name" {
+  value       = aws_security_group.main.name
   description = "セキュリティグループ名"
 }
