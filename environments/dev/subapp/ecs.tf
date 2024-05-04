@@ -75,3 +75,16 @@ module "ecs_service" {
   container_name      = module.ecs_task_definition.name
   container_port      = 3000
 }
+
+module "ecs_autoscaling" {
+  source                 = "../../../modules/ecs_autoscaling"
+  cluster_name           = module.ecs_cluster.name
+  service_name           = module.ecs_service.service_name
+  target_cpu_utilization = 50
+  max_capacity           = 3
+  min_capacity           = 1
+  scaling_policy_name    = "foo-subapp-dev-scaling-policy"
+  scale_in_cooldown      = 300
+  scale_out_cooldown     = 300
+  depends_on             = [module.ecs_service]
+}
