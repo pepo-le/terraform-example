@@ -16,6 +16,7 @@ data "aws_ssm_parameter" "amazonlinux_2" {
 
 module "ec2_instance" {
   source                      = "../../../modules/ec2"
+  tags_name                   = "foo-bastion-dev-ec2"
   instance_type               = "t2.micro"
   ami                         = data.aws_ssm_parameter.amazonlinux_2.value
   subnet_id                   = data.terraform_remote_state.common.outputs.subnet_ids[0]

@@ -9,7 +9,7 @@ module "cf_functions_ip_restriction" {
 function handler(event) {
     var request = event.request;
     var clientIP = event.viewer.ip;
-    var IP_WHITE_LIST = ['192.168.0.1', '1111:2222:3333::4444'];
+    var IP_WHITE_LIST = ['${var.own_ip_address}', '${var.own_ipv6_address}'];
     var isPermittedIp = IP_WHITE_LIST.includes(clientIP);
 
     if (isPermittedIp) {
