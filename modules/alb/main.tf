@@ -12,37 +12,18 @@ resource "aws_lb" "main" {
   }
 }
 
-resource "aws_lb_target_group" "main" {
-  name        = var.tg_name
-  port        = var.tg_port
-  protocol    = "HTTP"
-  vpc_id      = var.tg_vpc_id
-  target_type = var.tg_target_type
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    path                = var.tg_health_check_path
-    protocol            = "HTTP"
-    interval            = 30
-    matcher             = "200"
-  }
-
-  tags = {
-    Name = var.tg_name
-  }
-}
-
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = var.listener_port
-  protocol          = "HTTP"
+  protocol          = var.listener_protcol
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404: Not Found"
+      status_code  = "404"
+    }
   }
 }
 
@@ -55,7 +36,11 @@ resource "aws_lb_listener" "https" {
   certificate_arn   = var.certificate_arn
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404: Not Found"
+      status_code  = "404"
+    }
   }
 }

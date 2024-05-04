@@ -6,8 +6,12 @@ output "alb_dns_name" {
   value = module.alb.dns_name
 }
 
-output "alb_target_group_arn" {
-  value = module.alb.target_group_arn
+output "alb_listener_http_arn" {
+  value = module.alb.listener_http_arn
+}
+
+output "alb_listener_https_arn" {
+  value = module.alb.listener_https_arn
 }
 
 # ALBを作成
@@ -19,9 +23,5 @@ module "alb" {
   subnet_ids                 = module.vpc.subnet_ids
   enable_deletion_protection = false
   listener_port              = 80
-  tg_name                    = "foo-dev-alb-tg"
-  tg_port                    = 3000
-  tg_vpc_id                  = module.vpc.vpc_id
-  tg_health_check_path       = "/"
-  tg_target_type             = "ip"
+  listener_protcol           = "HTTP"
 }

@@ -30,30 +30,10 @@ variable "listener_port" {
   type        = number
 }
 
-variable "tg_name" {
-  description = "ターゲットグループの名前"
+variable "listener_protcol" {
+  description = "リスナーのプロトコル"
   type        = string
-}
-
-variable "tg_port" {
-  description = "ターゲットグループのポート"
-  type        = number
-}
-
-variable "tg_vpc_id" {
-  description = "ターゲットグループを作成するVPCのID"
-  type        = string
-}
-
-variable "tg_target_type" {
-  description = "ターゲットタイプ"
-  type        = string
-}
-
-variable "tg_health_check_path" {
-  description = "ターゲットグループのヘルスチェックパス"
-  type        = string
-  default     = "/"
+  default     = "HTTP"
 }
 
 variable "certificate_arn" {
