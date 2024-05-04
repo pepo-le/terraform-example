@@ -25,6 +25,15 @@ resource "aws_cloudfront_distribution" "main" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+
+    dynamic "function_association" {
+      for_each = var.function_associations
+
+      content {
+        event_type   = function_association.value.event_type
+        function_arn = function_association.value.function_arn
+      }
+    }
   }
 
   dynamic "origin" {

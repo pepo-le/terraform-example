@@ -78,3 +78,12 @@ variable "basic_auth" {
   type        = bool
   default     = false
 }
+
+variable "function_associations" {
+  description = "CloudFront Functionsの関連付け"
+  type = list(object({
+    event_type   = string
+    function_arn = string
+  }))
+  default = []
+}
