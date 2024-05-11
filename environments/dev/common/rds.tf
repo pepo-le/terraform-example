@@ -23,6 +23,11 @@ module "rds" {
   instance_class    = "db.t3.micro"
   db_username       = "foouser"
   # 後で変更するために、初期値を設定
-  db_password          = "uninitializepassword"
-  parameter_group_name = "default.mysql8.0"
+  db_password = "uninitializepassword"
+
+  parameter_group_name   = "foo-dev-parameter-group"
+  parameter_group_family = "mysql8.0"
+  parameter_group_parameters = {
+    time_zone = "Asia/Tokyo"
+  }
 }

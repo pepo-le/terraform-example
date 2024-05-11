@@ -35,11 +35,6 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "parameter_group_name" {
-  description = "RDSインスタンスに関連付けるDBパラメータグループの名前"
-  type        = string
-}
-
 variable "vpc_id" {
   description = "RDSインスタンスを作成するVPCのID"
   type        = string
@@ -82,4 +77,20 @@ variable "security_group_ids" {
 variable "subnet_group_name" {
   description = "RDSインスタンスに関連付けるDBサブネットグループの名前"
   type        = string
+}
+
+variable "parameter_group_name" {
+  description = "RDSインスタンスに関連付けるDBパラメータグループの名前"
+  type        = string
+}
+
+variable "parameter_group_family" {
+  description = "DBパラメータグループのファミリー"
+  type        = string
+}
+
+variable "parameter_group_parameters" {
+  description = "パラメータグループに設定するパラメータのマッピング"
+  type        = map(string)
+  default     = {}
 }
