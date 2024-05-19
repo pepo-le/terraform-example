@@ -2,6 +2,10 @@ output "cf_functions_ip_restriction_arn" {
   value = module.cf_functions_ip_restriction.arn
 }
 
+output "cf_functions_basic_auth_arn" {
+  value = module.cf_functions_basic_auth.arn
+}
+
 module "cf_functions_ip_restriction" {
   source = "../../../modules/cloudfront_functions/"
   name   = "foo-dev-cf-function-ip-restriction"

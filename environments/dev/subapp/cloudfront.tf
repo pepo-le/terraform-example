@@ -52,4 +52,15 @@ module "cloudfront_web" {
       viewer_protocol_policy = "allow-all"
     }
   ]
+
+  function_associations = [
+    {
+      event_type   = "viewer-request"
+      function_arn = module.cf_functions_ip_restriction.arn
+    },
+    {
+      event_type   = "viewer-request"
+      function_arn = module.cf_functions_basic_auth.arn
+    }
+  ]
 }
