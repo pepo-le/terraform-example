@@ -5,7 +5,7 @@ module "bastion_sg" {
   vpc_id  = data.terraform_remote_state.common.outputs.vpc_id
 }
 
-module "sgr_ecs_ingress" {
+module "sgr_bastion_ingress" {
   source                   = "../../../modules/security_group_rule"
   security_group_id        = module.bastion_sg.id
   type                     = "ingress"
@@ -18,7 +18,7 @@ module "sgr_ecs_ingress" {
   prefix_list_ids          = []
 }
 
-module "sgr_ecs_egress" {
+module "sgr_bastion_egress" {
   source                   = "../../../modules/security_group_rule"
   security_group_id        = module.bastion_sg.id
   type                     = "egress"
