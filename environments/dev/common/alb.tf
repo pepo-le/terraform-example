@@ -20,7 +20,7 @@ module "alb" {
   name                       = "foo-dev-alb"
   internal                   = false
   sg_id                      = module.alb_sg.id
-  subnet_ids                 = module.vpc.subnet_ids
+  subnet_ids                 = module.vpc.public_subnet_ids
   enable_deletion_protection = false
   listener_port              = 80
   listener_protcol           = "HTTP"

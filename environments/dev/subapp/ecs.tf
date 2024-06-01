@@ -67,7 +67,7 @@ module "ecs_service" {
   task_definition_arn = module.ecs_task_definition.arn
   desired_count       = 1
   launch_type         = "FARGATE"
-  subnets             = data.terraform_remote_state.common.outputs.subnet_ids
+  subnets             = data.terraform_remote_state.common.outputs.public_subnet_ids
   security_groups     = [module.ecs_sg.id]
   assign_public_ip    = true
   vpc_id              = data.terraform_remote_state.common.outputs.vpc_id

@@ -19,7 +19,7 @@ module "ec2_instance" {
   tags_name                   = "foo-bastion-dev-ec2"
   instance_type               = "t2.micro"
   ami                         = data.aws_ssm_parameter.amazonlinux_2.value
-  subnet_id                   = data.terraform_remote_state.common.outputs.subnet_ids[0]
+  subnet_id                   = data.terraform_remote_state.common.outputs.public_subnet_ids[0]
   security_group_ids          = [module.bastion_sg.id]
   associate_public_ip_address = false
   key_name                    = "foo-key"

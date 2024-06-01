@@ -8,12 +8,22 @@ variable "vpc_name" {
   type        = string
 }
 
-variable "subnet_cidr_blocks" {
-  description = "サブネットのCIDRブロックのリスト"
+variable "public_subnet_cidr_blocks" {
+  description = "パブリックサブネットのCIDRブロックのリスト"
   type        = list(string)
 }
 
-variable "availability_zones" {
-  description = "使用するアベイラビリティゾーンのリスト"
+variable "public_availability_zones" {
+  description = "パブリックサブネットが使用するアベイラビリティゾーンのリスト"
+  type        = list(string)
+}
+
+variable "private_subnet_cidr_blocks" {
+  description = "プライベートサブネットのCIDRブロックのリスト"
+  type        = list(string)
+}
+
+variable "private_availability_zones" {
+  description = "プライベートサブネットが使用するアベイラビリティゾーンのリスト"
   type        = list(string)
 }
