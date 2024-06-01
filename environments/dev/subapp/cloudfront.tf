@@ -56,11 +56,11 @@ module "cloudfront_web" {
   function_associations = [
     {
       event_type   = "viewer-request"
-      function_arn = module.cf_functions_ip_restriction.arn
+      function_arn = data.terraform_remote_state.common.outputs.cf_functions_basic_auth_arn
     },
     {
       event_type   = "viewer-request"
-      function_arn = module.cf_functions_basic_auth.arn
+      function_arn = data.terraform_remote_state.common.outputs.cf_functions_ip_restriction_arn
     }
   ]
 }

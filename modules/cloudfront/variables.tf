@@ -21,6 +21,12 @@ variable "default_cache_behavior" {
   })
 }
 
+variable "min_ttl" {
+  description = "最小TTL"
+  type        = number
+  default     = 0
+}
+
 variable "origins" {
   description = "CloudFrontのオリジンのリスト"
   type = list(object({
