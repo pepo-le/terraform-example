@@ -2,12 +2,20 @@ output "s3_images_bucket_name" {
   value = module.s3_images.bucket_name
 }
 
+output "s3_images_bucket_arn" {
+  value = module.s3_images.bucket_arn
+}
+
 output "s3_images_bucket_domain_name" {
   value = module.s3_images.bucket_domain_name
 }
 
 output "s3_logs_bucket_name" {
   value = module.s3_logs.bucket_name
+}
+
+output "s3_logs_bucket_arn" {
+  value = module.s3_logs.bucket_arn
 }
 
 output "s3_logs_bucket_domain_name" {

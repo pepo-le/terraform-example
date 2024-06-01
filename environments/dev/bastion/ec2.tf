@@ -21,7 +21,10 @@ module "ec2_instance" {
   ami                         = data.aws_ssm_parameter.amazonlinux_2.value
   subnet_id                   = data.terraform_remote_state.common.outputs.public_subnet_ids[0]
   security_group_ids          = [module.bastion_sg.id]
-  associate_public_ip_address = false
-  key_name                    = "foo-key"
+  associate_public_ip_address = true
+  key_name                    = var.SSH_KEY
   associate_eip               = true
+
+  instance_profile_name = "foo-bastion-dev-instance-profile"
+  iam_role_name         = module.iam_role_bastion.name
 }

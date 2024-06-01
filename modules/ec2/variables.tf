@@ -38,3 +38,15 @@ variable "associate_eip" {
   description = "EIPを割り当てるかどうか"
   type        = bool
 }
+
+variable "instance_profile_name" {
+  description = "インスタンスプロファイル名"
+  type        = string
+  default     = ""
+}
+
+variable "iam_role_name" {
+  description = "アタッチするIAMロールの名前"
+  type        = string
+  default     = ""
+}
