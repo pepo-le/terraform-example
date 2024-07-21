@@ -23,6 +23,12 @@ variable "associate_public_ip_address" {
   type        = bool
 }
 
+variable "private_ip" {
+  description = "プライベートIPアドレス"
+  type        = string
+  default     = ""
+}
+
 variable "key_name" {
   description = "キーペア名"
   type        = string

@@ -9,6 +9,7 @@ resource "aws_instance" "main" {
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.associate_public_ip_address
+  private_ip                  = var.private_ip != "" ? var.private_ip : null
   iam_instance_profile        = var.instance_profile_name != "" ? aws_iam_instance_profile.main[0].id : null
 
   vpc_security_group_ids = var.security_group_ids

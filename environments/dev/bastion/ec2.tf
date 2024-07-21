@@ -22,6 +22,7 @@ module "ec2_instance" {
   subnet_id                   = data.terraform_remote_state.common.outputs.public_subnet_ids[0]
   security_group_ids          = [module.bastion_sg.id]
   associate_public_ip_address = true
+  private_ip                  = "10.10.0.250"
   key_name                    = var.SSH_KEY
   associate_eip               = true
 
