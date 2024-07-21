@@ -13,7 +13,7 @@ module "cf_functions_ip_restriction" {
 function handler(event) {
     var request = event.request;
     var clientIP = event.viewer.ip;
-    var IP_WHITE_LIST = ['${var.own_ip_address}', '${var.own_ipv6_address}'];
+    var IP_WHITE_LIST = ['${var.allow_ip_address}', '${var.allow_ipv6_address}'];
     var isPermittedIp = IP_WHITE_LIST.includes(clientIP);
 
     if (isPermittedIp) {

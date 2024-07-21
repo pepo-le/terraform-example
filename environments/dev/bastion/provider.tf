@@ -10,9 +10,19 @@ terraform {
     bucket = "tfstate-terraform-foo-12345"
     region = "us-east-1"
     key    = "foo-bastion/terraform.tfstate"
+
+    profile = "terraform"
   }
 }
 
 provider "aws" {
   region = "us-east-1"
+
+  assume_role {
+    role_arn     = var.aws_role_arn
+    session_name = "terraform-session"
+  }
+
+  shared_credentials_files = ["~/.aws/credentials"]
+  profile                  = var.aws_source_profile
 }

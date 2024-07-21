@@ -4,5 +4,7 @@ data "terraform_remote_state" "common" {
     region = "us-east-1"
     bucket = "tfstate-terraform-foo-12345"
     key    = "foo-common/terraform.tfstate"
+
+    profile = "terraform"
   }
 }

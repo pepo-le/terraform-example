@@ -12,7 +12,7 @@ module "sgr_bastion_ingress" {
   from_port                = 22
   to_port                  = 22
   protocol                 = "TCP"
-  cidr_blocks              = ["${data.terraform_remote_state.common.outputs.own_ip_address}/32"]
+  cidr_blocks              = ["${data.terraform_remote_state.common.outputs.allow_ip_address}/32"]
   ipv6_cidr_blocks         = null
   source_security_group_id = null
   prefix_list_ids          = []

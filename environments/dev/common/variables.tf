@@ -1,17 +1,27 @@
-output "own_ip_address" {
-  value = var.own_ip_address
+output "allow_ip_address" {
+  value = var.allow_ip_address
 }
 
-output "own_ipv6_address" {
-  value = var.own_ipv6_address
+output "allow_ipv6_address" {
+  value = var.allow_ipv6_address
 }
 
-variable "own_ip_address" {
-  description = "自身のIPアドレス"
+variable "allow_ip_address" {
+  description = "接続を許可するIPアドレス"
   type        = string
 }
 
-variable "own_ipv6_address" {
-  description = "自身のIPv6アドレス"
+variable "allow_ipv6_address" {
+  description = "接続を許可するIPv6アドレス"
+  type        = string
+}
+
+variable "aws_source_profile" {
+  description = "AWS CLIのスイッチ元プロファイル名"
+  type        = string
+}
+
+variable "aws_role_arn" {
+  description = "AWSのロールARN"
   type        = string
 }
