@@ -17,7 +17,7 @@ module "ecs_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = "foo-app-dev-ecs-task"
+      name      = "foo-app-dev-ecs-container"
       image     = "${module.ecr.repository_url}:latest"
       cpu       = 256
       memory    = 512
@@ -72,8 +72,9 @@ module "ecs_service" {
   assign_public_ip    = true
   vpc_id              = data.terraform_remote_state.common.outputs.vpc_id
   target_group_arn    = module.alb_target_group.tg_arn
-  container_name      = module.ecs_task_definition.name
+  container_name      = module.ecs_task_definition.container_name
   container_port      = 3000
+  depends_on          = [module.alb_target_group]
 }
 
 module "ecs_autoscaling" {

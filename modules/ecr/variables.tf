@@ -1,3 +1,8 @@
+variable "create_repository" {
+  description = "ECRリポジトリの名前"
+  type        = string
+}
+
 variable "repository_name" {
   description = "ECRリポジトリの名前"
   type        = string
