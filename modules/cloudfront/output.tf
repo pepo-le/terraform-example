@@ -3,7 +3,7 @@ output "domain" {
   description = "CloudFrontのドメイン名"
 }
 
-output "oai_iam_arn" {
-  value       = aws_cloudfront_origin_access_identity.main.iam_arn
-  description = "CloudFrontのIAM ARN"
+output "arn" {
+  value       = aws_cloudfront_distribution.main.arn
+  description = "CloudFrontのARN"
 }

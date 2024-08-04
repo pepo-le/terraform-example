@@ -28,7 +28,7 @@ data "aws_caller_identity" "current" {}
 module "s3_images" {
   source      = "../../../modules/s3"
   bucket_name = "foo-dev-bucket-public-images-${data.aws_caller_identity.current.account_id}"
-  is_public   = true
+  is_public   = false
 }
 
 module "s3_logs" {

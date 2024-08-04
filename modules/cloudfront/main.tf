@@ -1,5 +1,10 @@
-resource "aws_cloudfront_origin_access_identity" "main" {
-  comment = var.oai_comment
+resource "aws_cloudfront_origin_access_control" "main" {
+  count                             = var.create_oac ? 1 : 0
+  name                              = var.oac_name
+  description                       = var.oac_description
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
 }
 
 resource "aws_cloudfront_distribution" "main" {
@@ -53,12 +58,7 @@ resource "aws_cloudfront_distribution" "main" {
         }
       }
 
-      dynamic "s3_origin_config" {
-        for_each = origin.value.custom_origin_config == null ? [1] : []
-        content {
-          origin_access_identity = aws_cloudfront_origin_access_identity.main.cloudfront_access_identity_path
-        }
-      }
+      origin_access_control_id = origin.value.use_oac ? aws_cloudfront_origin_access_control.main[0].id : null
     }
   }
 

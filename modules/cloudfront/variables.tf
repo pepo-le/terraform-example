@@ -38,6 +38,7 @@ variable "origins" {
       origin_protocol_policy = string
       origin_ssl_protocols   = list(string)
     })
+    use_oac = bool
   }))
 }
 
@@ -73,8 +74,20 @@ variable "cors" {
   default     = true
 }
 
-variable "oai_comment" {
-  description = "CloudFrontのOAIのコメント"
+variable "create_oac" {
+  description = "Origin Access Controlを作成するかどうか"
+  type        = bool
+  default     = false
+}
+
+variable "oac_name" {
+  description = "Origin Access Controlの名前"
+  type        = string
+  default     = ""
+}
+
+variable "oac_description" {
+  description = "Origin Access Controlの説明"
   type        = string
   default     = ""
 }
