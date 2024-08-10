@@ -9,10 +9,12 @@ module "cloudfront_web" {
   create_oac = true
   oac_name   = "foo-app-dev-oac"
 
+  use_cache_and_origin_request_policy = false
   default_cache_behavior = {
     target_origin_id = data.terraform_remote_state.common.outputs.alb_name
     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods   = ["GET", "HEAD"]
+
     forwarded_values = {
       headers      = ["*"]
       query_string = true
@@ -20,6 +22,7 @@ module "cloudfront_web" {
         forward = "all"
       }
     }
+
     viewer_protocol_policy = "allow-all"
   }
 
@@ -45,13 +48,20 @@ module "cloudfront_web" {
 
   ordered_cache_behaviors = [
     {
-      path_pattern           = "/images/*"
-      origin_id              = data.terraform_remote_state.common.outputs.s3_images_bucket_name
-      allowed_methods        = ["GET", "HEAD"]
-      cached_methods         = ["GET", "HEAD"]
-      headers                = []
-      query_string           = false
-      cookies_forward        = "none"
+      path_pattern    = "/images/*"
+      origin_id       = data.terraform_remote_state.common.outputs.s3_images_bucket_name
+      allowed_methods = ["GET", "HEAD"]
+      cached_methods  = ["GET", "HEAD"]
+
+      use_cache_and_origin_request_policy = false
+      forwarded_values = {
+        headers      = []
+        query_string = false
+        cookies = {
+          forward = "none"
+        }
+      }
+
       viewer_protocol_policy = "allow-all"
     }
   ]

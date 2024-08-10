@@ -4,19 +4,26 @@ variable "comment" {
   default     = ""
 }
 
+variable "use_cache_and_origin_request_policy" {
+  description = "キャッシュ/オリジンリクエストポリシーを使用するかどうか"
+  type        = bool
+}
+
 variable "default_cache_behavior" {
   description = "CloudFrontのデフォルトキャッシュ動作"
   type = object({
-    target_origin_id = string
-    allowed_methods  = list(string)
-    cached_methods   = list(string)
-    forwarded_values = object({
+    target_origin_id         = string
+    allowed_methods          = list(string)
+    cached_methods           = list(string)
+    cache_policy_id          = optional(string)
+    origin_request_policy_id = optional(string)
+    forwarded_values = optional(object({
       headers      = list(string)
       query_string = bool
       cookies = object({
         forward = string
       })
-    })
+    }))
     viewer_protocol_policy = string
   })
 }
@@ -45,13 +52,20 @@ variable "origins" {
 variable "ordered_cache_behaviors" {
   description = "キャッシュ動作のリスト"
   type = list(object({
-    path_pattern           = string
-    origin_id              = string
-    allowed_methods        = list(string)
-    cached_methods         = list(string)
-    headers                = list(string)
-    query_string           = bool
-    cookies_forward        = string
+    use_cache_and_origin_request_policy = bool
+    path_pattern                        = string
+    origin_id                           = string
+    allowed_methods                     = list(string)
+    cached_methods                      = list(string)
+    cache_policy_id                     = optional(string)
+    origin_request_policy_id            = optional(string)
+    forwarded_values = optional(object({
+      headers      = list(string)
+      query_string = bool
+      cookies = object({
+        forward = string
+      })
+    }))
     viewer_protocol_policy = string
   }))
 }

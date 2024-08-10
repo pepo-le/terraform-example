@@ -17,12 +17,17 @@ resource "aws_cloudfront_distribution" "main" {
     allowed_methods  = var.default_cache_behavior.allowed_methods
     cached_methods   = var.default_cache_behavior.cached_methods
 
-    forwarded_values {
-      headers      = var.default_cache_behavior.forwarded_values.headers
-      query_string = var.default_cache_behavior.forwarded_values.query_string
+    cache_policy_id          = var.use_cache_and_origin_request_policy ? var.default_cache_behavior.cache_policy_id : null
+    origin_request_policy_id = var.use_cache_and_origin_request_policy ? var.default_cache_behavior.origin_request_policy_id : null
 
-      cookies {
-        forward = var.default_cache_behavior.forwarded_values.cookies.forward
+    dynamic "forwarded_values" {
+      for_each = var.use_cache_and_origin_request_policy ? [] : [var.default_cache_behavior.forwarded_values]
+      content {
+        headers      = forwarded_values.value.headers
+        query_string = forwarded_values.value.query_string
+        cookies {
+          forward = forwarded_values.value.cookies.forward
+        }
       }
     }
 
@@ -71,11 +76,19 @@ resource "aws_cloudfront_distribution" "main" {
       allowed_methods  = ordered_cache_behavior.value.allowed_methods
       cached_methods   = ordered_cache_behavior.value.cached_methods
 
-      forwarded_values {
-        headers      = ordered_cache_behavior.value.headers
-        query_string = ordered_cache_behavior.value.query_string
-        cookies {
-          forward = ordered_cache_behavior.value.cookies_forward
+      cache_policy_id = (ordered_cache_behavior.value.use_cache_and_origin_request_policy
+      ? ordered_cache_behavior.value.cache_policy_id : null)
+      origin_request_policy_id = (ordered_cache_behavior.value.use_cache_and_origin_request_policy
+      ? ordered_cache_behavior.value.origin_request_policy_id : null)
+
+      dynamic "forwarded_values" {
+        for_each = ordered_cache_behavior.value.use_cache_and_origin_request_policy ? [] : [ordered_cache_behavior.value.forwarded_values]
+        content {
+          headers      = forwarded_values.value.headers
+          query_string = forwarded_values.value.query_string
+          cookies {
+            forward = forwarded_values.value.cookies.forward
+          }
         }
       }
       viewer_protocol_policy = ordered_cache_behavior.value.viewer_protocol_policy
