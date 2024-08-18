@@ -67,6 +67,10 @@ variable "ordered_cache_behaviors" {
       })
     }))
     viewer_protocol_policy = string
+    function_associations = optional(list(object({
+      event_type   = string
+      function_arn = string
+    })))
   }))
 }
 
