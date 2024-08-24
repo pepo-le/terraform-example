@@ -61,7 +61,7 @@ module "cloudfront_web" {
           forward = "none"
         }
       }
-
+      function_associations  = []
       viewer_protocol_policy = "allow-all"
     }
   ]
