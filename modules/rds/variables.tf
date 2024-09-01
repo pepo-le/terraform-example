@@ -63,6 +63,17 @@ variable "skip_final_snapshot" {
   default     = true
 }
 
+variable "backup_retention_period" {
+  description = "自動バックアップの保持期間"
+  type        = number
+  default     = 0
+}
+
+variable "backup_window" {
+  description = "自動バックアップのウィンドウ"
+  type        = string
+}
+
 variable "tags" {
   description = "リソースに割り当てるタグのマッピング"
   type        = map(string)

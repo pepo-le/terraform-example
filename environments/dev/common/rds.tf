@@ -13,6 +13,10 @@ module "rds" {
   multi_az            = false
   publicly_accessible = false
   skip_final_snapshot = true
+
+  backup_retention_period = 7
+  backup_window           = "18:30-19:00"
+
   tags = {
     Name = "foo-dev-rds"
   }
